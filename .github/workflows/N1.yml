@@ -6,7 +6,7 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        default: 'false'
+        default: 'true'
   schedule:
     - cron: "0 0 1,16 * *"
 
@@ -69,9 +69,12 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_SH
 
-    - name: SSH connect to Actions
-      uses: P3TERX/ssh2actions@main
-      if: (github.event.inputs.ssh == 'true') || contains(github.event.action, 'ssh')
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: Download package
       working-directory: ./openwrt
@@ -114,7 +117,7 @@ jobs:
         body: |
           首次使用建议全新刷写
           * 基本信息
-          IP: 192.168.2.2
+          IP: 192.168.1.10
           账户: root
           密码: password
 
